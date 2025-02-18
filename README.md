@@ -35,32 +35,4 @@ pip install python-dateutil
 
 
 # Use
-Run "python learn_requestsModel.py" to generate encodersModel.pt, weightsModel.pt and requestsModel.pt in the working directory. Those library can be used with Python Torch code like this:
-    single_request = {
-        'Date': thistime,
-        'Utilisateur': scanned_user,
-         'Requête': scanned_request
-    }
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-    merged_data = pd.merge(request_logs, users_logs, left_on='Utilisateur', right_on='Username', how='left')
-    tfidf_vectorizer = TfidfVectorizer()
-    encoder = OneHotEncoder(handle_unknown='ignore')
-    tfidf_vectors = tfidf_vectorizer.fit_transform(merged_data['Requête'])
-    user_encoding = encoder.fit_transform(merged_data[['Username']])
-        w1 = pyro.sample("w1", dist.Normal(torch.zeros(hidden_dim, feature_dim, device=device), torch.ones(hidden_dim, feature_dim, device=device)))
-        b1 = pyro.sample("b1", dist.Normal(torch.zeros(hidden_dim, device=device), torch.ones(hidden_dim, device=device)))
-        w2 = pyro.sample("w2", dist.Normal(torch.zeros(1, hidden_dim, device=device), torch.ones(1, hidden_dim, device=device)))
-        b2 = pyro.sample("b2", dist.Normal(torch.zeros(1, device=device), torch.ones(1, device=device)))
-    daily_errors_tensor = torch.tensor(daily_errors, dtype=torch.float32).to(device)
-    for i in range(len(request_logs)):
-        max_val = 1000
-        x = input_features[i].clone().detach()
-        hidden_layer = F.relu(x @ w1.T + b1)
-        clamped_layer = torch.clamp(hidden_layer @ w2.T + b2, max=max_val)
-        expected_errors = torch.exp(clamped_layer)
-        if inference:
-            obs_tensor = daily_errors_tensor[i].clone().detach()
-            pyro.sample(f'obs_{i}', dist.Poisson(expected_errors), obs=obs_tensor)
-        else:
-            pyro.sample(f'obs_{i}', dist.Poisson(expected_errors))
-
+Run "python learn_requestsModel.py" to generate encodersModel.pt, weightsModel.pt and requestsModel.pt in the working directory. Those library can then be used with Python Torch.
